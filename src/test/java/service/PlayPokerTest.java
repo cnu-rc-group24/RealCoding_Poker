@@ -1,6 +1,6 @@
 package service;
 
-import domain.CardDeck;
+import domain.Card;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -10,9 +10,11 @@ import repository.MockRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -25,14 +27,60 @@ public class PlayPokerTest {
     private PlayPoker playPoker;
 
     @Test
-    public void isCard(){
-        CardDeck cardDeck = mock(CardDeck.class);
-        cardDeck.setColor("Black");
-        cardDeck.setNumber(10);
-        cardDeck.setShape("Diamond");
-
-        verify(cardDeck,times(1)).setColor(anyString());
+    public void CheckCardDeck(){
+        playPoker = new PlayPoker(mockRepository);
+        assertThat(playPoker.decks.size(), is(52));
     }
+
+
+    @Test
+    public void isCard(){
+        Card card = mock(Card.class);
+        card.setColor("Black");
+        card.setNumber(10);
+        card.setShape("Diamond");
+
+        verify(card,times(1)).setColor(anyString());
+    }
+
+    @Test
+    public void CheckGetLastCardinDeckTest(){
+        playPoker = new PlayPoker(mockRepository);
+        assertThat(playPoker.decks.get(51), anything());
+    }
+
+    @Test
+    public void CheckCardsSuffleSizeTest(){
+        playPoker = new PlayPoker(mockRepository);
+        playPoker.suffled_MyDeck();
+        assertThat(playPoker.suffled_decks.size(), is(52));
+    }
+
+    public void CheckCardsSuffleMockTest(){
+        List<Card> decks = mock(ArrayList.class);
+
+    }
+
+    @Test
+    public void CheckingSettingCardShape(){
+        Card card = mock(Card.class);
+
+        card.setShape("Diamond");
+        verify(card).setShape("Diamond");
+    }
+
+    @Test
+    public void Over21NumberCardMockTest(){
+        List<Card> handcards = mock(ArrayList.class);
+
+        when(playPoker.OverCheck21Card(anyList())).thenReturn(true);
+        boolean checkOver21 = playPoker.OverCheck21Card(handcards);
+        assertThat(checkOver21, is(true));
+        verify(mockRepository, times(1)).OverCheck21Card(anyList());
+    }
+
+
+    /*
     @Test
     public void testHandDeck(){
 //        List<CardDeck> decks = mock(ArrayList.class);
@@ -66,4 +114,5 @@ public class PlayPokerTest {
     public void checkBet(){
 
     }
+    */
 }
