@@ -1,0 +1,12 @@
+package domain;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@AllArgsConstructor
+@Data
+public class Card {
+    private String shape;
+    private String color;
+    private int number;
+}
