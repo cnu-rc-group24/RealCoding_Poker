@@ -1,106 +1,118 @@
 package service;
-import domain.CardDeck;
+
+import domain.Card;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import repository.MockRepository;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
-public class PlayPoker {
-    private final MockRepository mockRepository;
-    List<CardDeck> decks;
+@RunWith(MockitoJUnitRunner.class)
+public class PlayPokerTest {
+    @Mock
+    private MockRepository mockRepository;
 
-    public PlayPoker(MockRepository mockRepository) {
-        this.mockRepository = mockRepository;
+    @InjectMocks
+    private PlayPoker playPoker;
+
+    @Test
+    public void CheckCardDeck(){
+        playPoker = new PlayPoker(mockRepository);
+        assertThat(playPoker.decks.size(), is(52));
     }
 
-    public void initDecks(){
-        CardDeck cardDeck = null;
-        for(int i=0; i < 4; i++){
-            for(int j=0; j < 13; j++){
-                switch (i){
-                    case 1:
-                        cardDeck = new CardDeck("Diamond","Red",j); break;
-                    case 2:
-                        cardDeck = new CardDeck("Heart","Red",j); break;
-                    case 3:
-                        cardDeck = new CardDeck("Clover","Black",j); break;
-                    case 4:
-                        cardDeck = new CardDeck("Spade","Black",j); break;
-                }
-                decks.add(cardDeck);
-            }
-        }
+
+    @Test
+    public void isCard(){
+        Card card = mock(Card.class);
+        card.setColor("Black");
+        card.setNumber(10);
+        card.setShape("Diamond");
+
+        verify(card,times(1)).setColor(anyString());
     }
 
-    public List<CardDeck> handDeck(List<CardDeck> decks){
-        List<CardDeck> handDecks = null;
-
-        for(int i = 0; i < 5; i++){
-            int pickedCardIndex = (int)(Math.random()*52);
-            for(int j = 0; j < handDecks.size(); j++){
-                if(handDecks.get(j) == decks.get(pickedCardIndex)) i--;
-                else handDecks.add(decks.get(pickedCardIndex));
-            }
-        }
-
-        return handDecks;
+    @Test
+    public void CheckGetLastCardinDeckTest(){
+        playPoker = new PlayPoker(mockRepository);
+        assertThat(playPoker.decks.get(51), anything());
     }
 
-    public void checking(List<CardDeck> handDecks){
-        findPairs(handDecks);
-        findFlush(handDecks);
-        findStraight(handDecks);
+    @Test
+    public void CheckCardsSuffleSizeTest(){
+        playPoker = new PlayPoker(mockRepository);
+        playPoker.suffled_MyDeck();
+        assertThat(playPoker.suffled_decks.size(), is(52));
     }
 
-    private String findStraight(List<CardDeck> handDecks) {
-        int firstNumber =  handDecks.get(0).getNumber();
-        int checkLoyal = 0;
-        for(int i = 0; i < 5; i++){
-            firstNumber++;
-            if(handDecks.get(i).getNumber() != firstNumber) return null;
-            if(handDecks.get(0).getShape()==handDecks.get(i).getShape()) checkLoyal++;
-        }
-        if(checkLoyal == 5) return "Royal Straight Flush";
-        return "Straight";
+    public void CheckCardsSuffleMockTest(){
+        List<Card> decks = mock(ArrayList.class);
+
     }
 
-    private String findFlush(List<CardDeck> handDecks) {
-        boolean flush = true;
-        for(int i = 0; i < 5; i++){
-            if("Red" != handDecks.get(i).getShape()) flush=false;
-        }
-        for(int i = 0; i < 5; i++){
-            if("Black" != handDecks.get(i).getShape()) flush=false;
-        }
-        if(flush) return handDecks.get(0).getShape()+" Flush";
-        else return null;
+    @Test
+    public void CheckingSettingCardShape(){
+        Card card = mock(Card.class);
+
+        card.setShape("Diamond");
+        verify(card).setShape("Diamond");
     }
 
-    private String findPairs(List<CardDeck> handDecks) {
-        int[] numbers = new int[5];
-        int[] countPairs = {0,0,0,0,0};
-        int max = 0;
-        int checkPairs=0,checkTriples=0,checkFourcard=0;
+    @Test
+    public void Over21NumberCardMockTest(){
+        List<Card> handcards = mock(ArrayList.class);
 
-        for(int i = 0; i < 5; i++){
-            numbers[i] = handDecks.get(i).getNumber();
-        }
-        for(int i = 0; i < 5; i++){
-            for(int j = i+1; j < 5; j++){
-                if(numbers[i] == numbers[j]) countPairs[i]++;
-            }
-        }
-        for(int i =0; i < 5; i++){
-            if(countPairs[i]==1) checkPairs++;
-            if(countPairs[i]==2) checkTriples++;
-            if(countPairs[i]==3) checkFourcard++;
-        }
-
-        if (checkPairs==1) return"One Pair";
-        else if(checkPairs==2) return "Two Pairs";
-        else if(checkTriples==1&&checkPairs==1) return "Full House";
-        else if(checkTriples == 1) return "Triple";
-        else if(checkFourcard == 1) return "Four Cards";
-        else return null;
+        when(playPoker.OverCheck21Card(anyList())).thenReturn(true);
+        boolean checkOver21 = playPoker.OverCheck21Card(handcards);
+        assertThat(checkOver21, is(true));
+        verify(mockRepository, times(1)).OverCheck21Card(anyList());
     }
+
+
+    /*
+    @Test
+    public void testHandDeck(){
+//        List<CardDeck> decks = mock(ArrayList.class);
+        List<CardDeck> decks = new ArrayList<CardDeck>();
+
+        decks.add(new CardDeck("Spade","Black",5));
+        decks.add(new CardDeck("Spade","Black",2));
+        decks.add(new CardDeck("Spade","Black",8));
+        decks.add(new CardDeck("Spade","Black",11));
+        decks.add(new CardDeck("Spade","Black",7));
+
+        when(playPoker.handDeck()).thenReturn(decks);
+        List<CardDeck> myDeck = playPoker.handDeck();
+        assertThat(myDeck.get(2).getShape(), is("Spade"));
+
+    }
+
+    @Test
+    public void checkAllCards(){
+        CardDeck cardDeck = mock(CardDeck.class);
+        playPoker.initDecks();
+    }
+    @Test
+    public void checkTwoPairs(){
+        CardDeck cardDeck = mock(CardDeck.class);
+
+
+    }
+
+    @Test
+    public void checkBet(){
+
+    }
+    */
 }
