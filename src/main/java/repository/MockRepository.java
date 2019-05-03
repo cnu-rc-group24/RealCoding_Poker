@@ -14,8 +14,11 @@ public interface MockRepository {
 
     String findStraight(List<CardDeck> handDecks);
 
+    CardDeck findCardByNumber (int number);
     String findFlush(List<CardDeck> handDecks);
 
     String findPairs(List<CardDeck> handDecks);
+    CardDeck pickOneCard (List<CardDeck> decks);
+    void Play(List<CardDeck> decks);
 
 }

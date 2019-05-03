@@ -2,81 +2,105 @@ package service;
 import domain.CardDeck;
 import repository.MockRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class PlayPoker {
     private final MockRepository mockRepository;
-    List<CardDeck> decks;
+
+
+    enum Combine{
+        Top, OnePair, TwoPair, Triple, Straight, Flush, FullHouse, FourCard, RoyalStraightFlush;
+    }
 
     public PlayPoker(MockRepository mockRepository) {
         this.mockRepository = mockRepository;
     }
 
-    public void initDecks(){
-        CardDeck cardDeck = null;
+    public List<CardDeck> initDecks(List<CardDeck> decks){
+        CardDeck cardDeck;
         for(int i=0; i < 4; i++){
             for(int j=0; j < 13; j++){
                 switch (i){
+                    case 0:
+                        cardDeck = new CardDeck("Diamond","Red",j);decks.add(cardDeck); break;
                     case 1:
-                        cardDeck = new CardDeck("Diamond","Red",j); break;
+                        cardDeck = new CardDeck("Heart","Red",j);decks.add(cardDeck); break;
                     case 2:
-                        cardDeck = new CardDeck("Heart","Red",j); break;
+                        cardDeck = new CardDeck("Clover","Black",j);decks.add(cardDeck); break;
                     case 3:
-                        cardDeck = new CardDeck("Clover","Black",j); break;
-                    case 4:
-                        cardDeck = new CardDeck("Spade","Black",j); break;
+                        cardDeck = new CardDeck("Spade","Black",j);decks.add(cardDeck); break;
                 }
-                decks.add(cardDeck);
             }
         }
+        return decks;
     }
 
     public List<CardDeck> handDeck(List<CardDeck> decks){
-        List<CardDeck> handDecks = null;
-
-        for(int i = 0; i < 5; i++){
+        List<CardDeck> handDecks = new ArrayList<CardDeck>();
+        int size = 1;
+        handDecks.add(decks.get((int)Math.random()*52));
+        for(int i = 0; i < 4; i++){
             int pickedCardIndex = (int)(Math.random()*52);
-            for(int j = 0; j < handDecks.size(); j++){
-                if(handDecks.get(j) == decks.get(pickedCardIndex)) i--;
-                else handDecks.add(decks.get(pickedCardIndex));
+            for(int j = 0; j < size; j++){
+                if(handDecks.get(j) == decks.get(pickedCardIndex)) {
+                    pickedCardIndex = (int)(Math.random()*52);
+                    i--;
+                }
             }
+            handDecks.add(decks.get(pickedCardIndex));
+            size++;
         }
-
         return handDecks;
     }
-
-    public void checking(List<CardDeck> handDecks){
-        findPairs(handDecks);
-        findFlush(handDecks);
-        findStraight(handDecks);
+    public CardDeck pickOneCard (List<CardDeck> decks){
+        int random = (int)Math.random()*decks.size();
+        return decks.get(random);
     }
+    public CardDeck findCardByNumber (int number){
+        CardDeck card = mockRepository.findCardByNumber(number);
+        return card;
+    }
+//    public void checking(List<CardDeck> handDecks){
+//        findPairs(handDecks);
+//        findFlush(handDecks);
+//        findStraight(handDecks);
+//    }
 
-    private String findStraight(List<CardDeck> handDecks) {
-        int firstNumber =  handDecks.get(0).getNumber();
+    public String findStraight(List<CardDeck> handDecks) {
+        int minNumber = handDecks.get(0).getNumber();
+        int checkStraight = 0;
+        for(int i = 0; i < 5; i++){
+            if(minNumber >handDecks.get(i).getNumber())
+                minNumber = handDecks.get(i).getNumber();
+        }
         int checkLoyal = 0;
         for(int i = 0; i < 5; i++){
-            firstNumber++;
-            if(handDecks.get(i).getNumber() != firstNumber) return null;
+            for(int j = 0; j < 5; j++){
+                if(handDecks.get(j).getNumber() == minNumber) { checkStraight++; break;}
+            }
             if(handDecks.get(0).getShape()==handDecks.get(i).getShape()) checkLoyal++;
+            minNumber++;
         }
-        if(checkLoyal == 5) return "Royal Straight Flush";
-        return "Straight";
-    }
-
-    private String findFlush(List<CardDeck> handDecks) {
-        boolean flush = true;
-        for(int i = 0; i < 5; i++){
-            if("Red" != handDecks.get(i).getShape()) flush=false;
-        }
-        for(int i = 0; i < 5; i++){
-            if("Black" != handDecks.get(i).getShape()) flush=false;
-        }
-        if(flush) return handDecks.get(0).getShape()+" Flush";
+        if(checkLoyal == 5 && checkStraight==5) return "Royal Straight Flush";
+        if(checkStraight == 5) return "Straight";
         else return null;
     }
 
-    private String findPairs(List<CardDeck> handDecks) {
+    public String findFlush(List<CardDeck> handDecks) {
+        boolean flush = false;
+        for(int i = 0; i < 5; i++){
+            if(handDecks.get(i).getColor().equals("Red")) flush=true;
+        }
+        for(int i = 0; i < 5; i++){
+            if(handDecks.get(i).getColor().equals("Black")) flush=true;
+        }
+        if(flush) return handDecks.get(0).getColor()+" Flush";
+        else return null;
+    }
+
+    public String findPairs(List<CardDeck> handDecks) {
         int[] numbers = new int[5];
         int[] countPairs = {0,0,0,0,0};
         int max = 0;
@@ -96,11 +120,25 @@ public class PlayPoker {
             if(countPairs[i]==3) checkFourcard++;
         }
 
-        if (checkPairs==1) return"One Pair";
-        else if(checkPairs==2) return "Two Pairs";
-        else if(checkTriples==1&&checkPairs==1) return "Full House";
+        if(checkFourcard == 1) return "FourCards";
+        else if(checkTriples==1 && checkPairs==2) return "Full House";
         else if(checkTriples == 1) return "Triple";
-        else if(checkFourcard == 1) return "Four Cards";
-        else return null;
+        else if(checkPairs==2) return "TwoPairs";
+        else if (checkPairs==1) return"OnePair";
+        else return "Top";
     }
+
+    public void Play(List<CardDeck> decks){
+        System.out.println("카드 덱 생성중...");
+        initDecks(decks);
+        System.out.println("덱을 5장 드로우!");
+        handDeck(decks);
+        if(findStraight(decks)!=null)
+            System.out.println(findStraight(decks));
+        else if(findFlush(decks)!=null)
+            System.out.println(findFlush(decks));
+        else
+            System.out.println(findPairs(decks));
+    }
+
 }
