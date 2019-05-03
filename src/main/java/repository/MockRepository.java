@@ -1,5 +1,6 @@
 package repository;
 
+import domain.Card;
 import domain.CardDeck;
 
 import java.util.List;
@@ -21,4 +22,8 @@ public interface MockRepository {
     CardDeck pickOneCard (List<CardDeck> decks);
     void Play(List<CardDeck> decks);
 
+    CardDeck findByColor(String color);
+    CardDeck findByShape(String Shape);
+    CardDeck findByNumber(int number);
+    List<CardDeck> ThrowOutHandCard(List<CardDeck> decks, int number);
 }
