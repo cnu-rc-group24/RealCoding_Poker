@@ -227,7 +227,24 @@ public class PlayPokerTest {
         myHandDeck = playPoker.ReceiveToMyHandDeck(myHandDeck, new CardDeck("Heart","Red",10));
         assertThat(myHandDeck.size(), is(6));
     }
+    @Test
+    public void ifSameShape(){
+        List<CardDeck> decks1 = new ArrayList<CardDeck>();
+        List<CardDeck> decks2 = new ArrayList<CardDeck>();
 
+        decks1.add(new CardDeck("Diamond","Red",5));
+        decks1.add(new CardDeck("Diamond","Red",7));
+        decks1.add(new CardDeck("Diamond","Red",9));
+        decks1.add(new CardDeck("Diamond","Red",2));
+        decks1.add(new CardDeck("Diamond","Red",1));
 
+        decks2.add(new CardDeck("Clover","Black",5));
+        decks2.add(new CardDeck("Clover","Black",8));
+        decks2.add(new CardDeck("Clover","Black",2));
+        decks2.add(new CardDeck("Clover","Black",10));
+        decks2.add(new CardDeck("Clover","Black",11));
+
+        assertThat(playPoker.ifSameShape(decks1, decks2),is(decks2));
+    }
 
 }
