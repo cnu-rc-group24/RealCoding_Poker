@@ -9,7 +9,6 @@ import java.util.List;
 public class PlayPoker {
     private final MockRepository mockRepository;
 
-
     enum Combine{
         Top, OnePair, TwoPair, Triple, Straight, Flush, FullHouse, FourCard, RoyalStraightFlush;
     }
@@ -18,23 +17,24 @@ public class PlayPoker {
         this.mockRepository = mockRepository;
     }
 
-    public List<CardDeck> initDecks(List<CardDeck> decks){
-        CardDeck cardDeck;
+    public List<CardDeck> initDecks(){
+        CardDeck card;
+        List<CardDeck> cardDeck = new ArrayList<CardDeck>();
         for(int i=0; i < 4; i++){
             for(int j=0; j < 13; j++){
                 switch (i){
                     case 0:
-                        cardDeck = new CardDeck("Diamond","Red",j);decks.add(cardDeck); break;
+                        card = new CardDeck("Diamond","Red",j); cardDeck.add(card); break;
                     case 1:
-                        cardDeck = new CardDeck("Heart","Red",j);decks.add(cardDeck); break;
+                        card = new CardDeck("Heart","Red",j); cardDeck.add(card); break;
                     case 2:
-                        cardDeck = new CardDeck("Clover","Black",j);decks.add(cardDeck); break;
+                        card = new CardDeck("Clover","Black",j); cardDeck.add(card); break;
                     case 3:
-                        cardDeck = new CardDeck("Spade","Black",j);decks.add(cardDeck); break;
+                        card = new CardDeck("Spade","Black",j); cardDeck.add(card); break;
                 }
             }
         }
-        return decks;
+        return cardDeck;
     }
 
     public List<CardDeck> handDeck(List<CardDeck> decks){
@@ -54,6 +54,7 @@ public class PlayPoker {
         }
         return handDecks;
     }
+
     public CardDeck pickOneCard (List<CardDeck> decks){
         int random = (int)Math.random()*decks.size();
         return decks.get(random);
@@ -128,9 +129,9 @@ public class PlayPoker {
         else return "Top";
     }
 
-    public void Play(List<CardDeck> decks){
+    public void Play(){
         System.out.println("카드 덱 생성중...");
-        initDecks(decks);
+        List<CardDeck> decks = initDecks();
         System.out.println("덱을 5장 드로우!");
         handDeck(decks);
         if(findStraight(decks)!=null)
@@ -141,4 +142,25 @@ public class PlayPoker {
             System.out.println(findPairs(decks));
     }
 
+    public CardDeck findByColor(String color){
+        CardDeck cardDeck = mockRepository.findByColor(color);
+        return cardDeck;
+    }
+
+    public CardDeck findByShape(String shape){
+        CardDeck cardDeck = mockRepository.findByShape(shape);
+        return cardDeck;
+    }
+
+    public CardDeck findByNumber(int number){
+        CardDeck cardDeck = mockRepository.findByNumber(number);
+        return cardDeck;
+    }
+
+    //number: 0 ~ 4
+    public List<CardDeck> ThrowOutHandCard(List<CardDeck> decks, int number){
+        List<CardDeck> my_handDeck = handDeck(decks);
+        my_handDeck.remove(number);
+        return my_handDeck;
+    }
 }
