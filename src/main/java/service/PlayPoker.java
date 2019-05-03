@@ -173,4 +173,24 @@ public class PlayPoker {
         HandDeck.add(card);
         return HandDeck;
     }
+       public List<CardDeck> ifSameShape(List<CardDeck> handDecks1, List<CardDeck> handDecks2) {
+
+        // 두 덱이 모두 플러쉬로 같음
+        
+        // 각 덱의 가장 큰 숫자를 선별중
+        int a = 0, b = 0;
+        for(int i=0; i<5; i++){
+            if(a < handDecks1.get(i).getNumber()) a = handDecks1.get(i).getNumber();
+        }
+        for(int j=0; j<5; j++){
+            if(b < handDecks1.get(j).getNumber()) b = handDecks1.get(j).getNumber();
+        }
+
+        // 각 플레이어의 선별한 숫자를 비교 후 이긴 사람의 덱을 리턴턴
+       if(a>b)
+            return handDecks1;
+        else
+            return handDecks2;
+
+    }
 }
