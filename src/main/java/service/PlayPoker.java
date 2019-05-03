@@ -163,4 +163,14 @@ public class PlayPoker {
         my_handDeck.remove(number);
         return my_handDeck;
     }
+
+    public List<CardDeck> ThrowOutToMyHandDeck(List<CardDeck> HandDeck, int number){
+        HandDeck.remove(number);
+        return HandDeck;
+    }
+
+    public List<CardDeck> ReceiveToMyHandDeck(List<CardDeck> HandDeck, CardDeck card){
+        HandDeck.add(card);
+        return HandDeck;
+    }
 }
