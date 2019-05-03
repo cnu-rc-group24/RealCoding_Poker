@@ -1,9 +1,9 @@
 package repository;
 
-import domain.Card;
-import domain.CardDeck;
+        import domain.Card;
+        import domain.CardDeck;
 
-import java.util.List;
+        import java.util.List;
 
 public interface MockRepository {
 
@@ -26,4 +26,7 @@ public interface MockRepository {
     CardDeck findByShape(String Shape);
     CardDeck findByNumber(int number);
     List<CardDeck> ThrowOutHandCard(List<CardDeck> decks, int number);
+    List<CardDeck> ThrowOutToMyHandDeck(List<CardDeck> HandDeck, int number);
+    List<CardDeck> ReceiveToMyHandDeck(List<CardDeck> HandDeck, CardDeck card);
+
 }
