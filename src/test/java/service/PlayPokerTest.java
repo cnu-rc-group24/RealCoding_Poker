@@ -210,4 +210,24 @@ public class PlayPokerTest {
         System.out.printf(decksSpyList.toString());
         assertThat(decksSpyList.size(), is(4));
     }
+
+    @Test
+    public void IFThrowoutOneCard_MyHandCardIsFiveCards_Then_RemainFourCards(){
+        List<CardDeck> decks = playPoker.initDecks();
+        List<CardDeck> myHandDeck = playPoker.handDeck(decks);
+        myHandDeck = playPoker.ThrowOutToMyHandDeck(myHandDeck, 0);
+        assertThat(myHandDeck.size(), is(4));
+    }
+
+    //Card가 같은 지 카드를 주기전에 확인해야하는가 주고나서 확인해야하는가?
+    @Test
+    public void IFReceiveOneCard_MyHandCardIsFiveCards_Then_RemainSixCards(){
+        List<CardDeck> decks = playPoker.initDecks();
+        List<CardDeck> myHandDeck = playPoker.handDeck(decks);
+        myHandDeck = playPoker.ReceiveToMyHandDeck(myHandDeck, new CardDeck("Heart","Red",10));
+        assertThat(myHandDeck.size(), is(6));
+    }
+
+
+
 }
