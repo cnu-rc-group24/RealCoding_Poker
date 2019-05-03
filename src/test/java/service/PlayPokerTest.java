@@ -11,6 +11,8 @@ import repository.MockRepository;
 import javax.smartcardio.Card;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -245,6 +247,82 @@ public class PlayPokerTest {
         decks2.add(new CardDeck("Clover","Black",11));
 
         assertThat(playPoker.ifSameShape(decks1, decks2),is(decks2));
+    }
+    
+    @Test
+    public void checkTopValue() {
+        List<CardDeck> decks = new ArrayList<CardDeck>();
+
+        decks.add(new CardDeck("Diamond","Red",5));
+        decks.add(new CardDeck("Clover","Black",8));
+        decks.add(new CardDeck("Spade","Black",2));
+        decks.add(new CardDeck("Heart","Red",11));
+        decks.add(new CardDeck("Clover","Black",6));
+
+        //카드덱을 테스트 코드 내에서 직접 주게 되므로 테스트 함수 내에서 정렬 실행
+        Collections.sort(decks, new Comparator<CardDeck>() {
+            @Override
+            public int compare (CardDeck d1, CardDeck d2) {
+                if (d1.getNumber() > d2.getNumber()) {
+                    return 1;
+                } else if (d1.getNumber() < d2.getNumber()) {
+                    return -1;
+                } else
+                    return 0;
+            }
+        });
+
+        //오름차순으로 정렬된 마지막 값이 Top값
+        assertThat(decks.get(4).getNumber(), is(11));
+
+    }
+
+    @Test
+    public void compareTopVersusTop() {
+        List<CardDeck> decksOne = new ArrayList<CardDeck>();
+
+        decksOne.add(new CardDeck("Diamond","Red",5));
+        decksOne.add(new CardDeck("Clover","Black",8));
+        decksOne.add(new CardDeck("Spade","Black",2));
+        decksOne.add(new CardDeck("Heart","Red",11));
+        decksOne.add(new CardDeck("Clover","Black",6));
+
+        //카드덱을 테스트 코드 내에서 직접 주게 되므로 테스트 함수 내에서 정렬 실행
+        Collections.sort(decksOne, new Comparator<CardDeck>() {
+            @Override
+            public int compare (CardDeck d1, CardDeck d2) {
+                if (d1.getNumber() > d2.getNumber()) {
+                    return 1;
+                } else if (d1.getNumber() < d2.getNumber()) {
+                    return -1;
+                } else
+                    return 0;
+            }
+        });
+
+        List<CardDeck> decksTwo = new ArrayList<CardDeck>();
+
+        decksTwo.add(new CardDeck("Diamond","Red",3));
+        decksTwo.add(new CardDeck("Clover","Black",8));
+        decksTwo.add(new CardDeck("Spade","Black",7));
+        decksTwo.add(new CardDeck("Heart","Red",6));
+        decksTwo.add(new CardDeck("Clover","Black",5));
+
+        //카드덱을 테스트 코드 내에서 직접 주게 되므로 테스트 함수 내에서 정렬 실행
+        Collections.sort(decksTwo, new Comparator<CardDeck>() {
+            @Override
+            public int compare (CardDeck d1, CardDeck d2) {
+                if (d1.getNumber() > d2.getNumber()) {
+                    return 1;
+                } else if (d1.getNumber() < d2.getNumber()) {
+                    return -1;
+                } else
+                    return 0;
+            }
+        });
+
+        //서로의 Top값을 비교, 참을 확인
+        assertThat((decksOne.get(4).getNumber() > decksTwo.get(4).getNumber()), is(true));
     }
 
 }
