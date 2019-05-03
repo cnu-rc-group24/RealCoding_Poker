@@ -58,10 +58,8 @@ public class PlayPokerTest {
 
     @Test
     public void handDeckSizeisFive(){
-        List<CardDeck> decks = new ArrayList<CardDeck>();
-        List<CardDeck> decksSpyList = spy(decks);
-        playPoker.initDecks(decks);
-        decksSpyList = playPoker.handDeck(decks);
+        List<CardDeck> decks = playPoker.initDecks();
+        List<CardDeck> decksSpyList = playPoker.handDeck(decks);
 
         int decksSize = decksSpyList.size();
 
@@ -178,5 +176,38 @@ public class PlayPokerTest {
         //then
         verify(mockRepository,atLeast(1)).findCardByNumber(anyInt());
         assertThat(deck.getNumber(), is(12));
+    }
+
+    @Test
+    public void RedColorCardMockingCheck(){
+        when(playPoker.findByColor(anyString())).thenReturn(new CardDeck("Diamond", "Red", 1));
+        String CardColor = playPoker.findByColor("Red").getColor();
+        assertThat(CardColor, is("Red"));
+        verify(mockRepository, times(1)).findByColor(anyString());
+    }
+
+    @Test
+    public void IfHandDianmondCardthenReturnMockingCheck(){
+        given(mockRepository.findByShape("Diamond")).willReturn(new CardDeck("Diamond", "Red", 1));
+        CardDeck cardDeck = playPoker.findByShape("Diamond");
+        verify(mockRepository, atLeast(1)).findByShape(anyString());
+        assertThat(cardDeck.getShape(), is("Diamond"));
+    }
+
+    @Test
+    public void ThrowoutOneCardMyHandDeck(){
+        List<CardDeck> decks = playPoker.initDecks();
+        List<CardDeck> decksSpyList;
+
+        List<CardDeck> testDecks = new ArrayList<CardDeck>();
+        testDecks.add(new CardDeck("Diamond","Red",5));
+        testDecks.add(new CardDeck("Clover","Black",8));
+        testDecks.add(new CardDeck("Spade","Black",2));
+        testDecks.add(new CardDeck("Heart","Red",10));
+
+        given(mockRepository.ThrowOutHandCard(decks, 0)).willReturn(testDecks);
+        decksSpyList = playPoker.ThrowOutHandCard(decks, 0);
+        System.out.printf(decksSpyList.toString());
+        assertThat(decksSpyList.size(), is(4));
     }
 }
